@@ -1,15 +1,17 @@
-# Copyright 1999-2015 Gentoo Foundation
+# Copyright 1999-2016 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Id$
 
 EAPI=5
 
 PYTHON_COMPAT=( python2_7 python3_3 python3_4 )
-inherit eutils fdo-mime gnome2-utils mono-env multilib python-single-r1
+inherit eutils autotools fdo-mime gnome2-utils mono-env multilib python-single-r1
 
 DESCRIPTION="Graphical IRC client based on XChat"
 HOMEPAGE="http://hexchat.github.io/"
-SRC_URI="https://dl.hexchat.net/hexchat/${P}.tar.xz"
+
+#SRC_URI="https://dl.hexchat.net/hexchat/${P}.tar.xz"
+SRC_URI="https://github.com/Cynede/hexchat/archive/v${PV}_stupid.tar.gz -> ${P}.tar.gz"
 
 LICENSE="GPL-2 plugin-fishlim? ( MIT )"
 SLOT="0"
@@ -45,6 +47,8 @@ DEPEND="${DEPEND}
 	theme-manager? ( dev-util/monodevelop )
 	dev-lang/lua"
 
+S="${WORKDIR}/${P}_stupid"
+
 pkg_setup() {
 	use plugins && use python && python-single-r1_pkg_setup
 	if use theme-manager ; then
@@ -72,6 +76,7 @@ pkg_setup() {
 }
 
 src_prepare() {
+	eautoreconf
 	epatch_user
 }
 
@@ -160,6 +165,8 @@ pkg_postinst() {
 	elog "  x11-plugins/hexchat-javascript (javascript support)"
 	elog "  x11-themes/sound-theme-freedesktop (default BEEP sound,"
 	elog "    needs libcanberra enabled)"
+	elog
+	elog "Note that this version is for stupid people only"
 	einfo
 }
 
