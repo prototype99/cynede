@@ -15,7 +15,7 @@ fi
 
 DESCRIPTION="A hackable text editor for the 21st Century"
 HOMEPAGE="https://atom.io"
-SRC_URI="https://github.com/atom/atom/archive/v${MPV}.tar.gz -> ${P}.tar.gz"
+SRC_URI="https://github.com/Heather/atom/archive/v${MPV}.tar.gz -> ${P}.tar.gz"
 RESTRICT="mirror"
 LICENSE="MIT"
 SLOT="0"
