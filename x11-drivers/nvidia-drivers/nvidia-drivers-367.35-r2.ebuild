@@ -170,9 +170,9 @@ pkg_setup() {
 }
 
 src_prepare() {
-  epatch "${FILESDIR}"/support-4.7.patch
-  epatch "${FILESDIR}"/support-4.7_gem.patch
-  epatch "${FILESDIR}"/support-4.7_fb.patch
+	epatch "${FILESDIR}"/support-4.7.patch
+	epatch "${FILESDIR}"/support-4.7_gem.patch
+	epatch "${FILESDIR}"/support-4.7_fb.patch
 	epatch "${FILESDIR}"/${PN}-367.35-profiles-rc.patch
 
 	if use pax_kernel; then
