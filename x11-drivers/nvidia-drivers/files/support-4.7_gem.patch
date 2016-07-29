@@ -1,0 +1,11 @@
+--- kernel/nvidia-drm/nvidia-drm-gem.c	2016-07-29 16:01:22.710173459 +0400
++++ kernel/nvidia-drm/nvidia-drm-gem_.c	2016-07-29 16:01:23.790169996 +0400
+@@ -408,7 +408,7 @@
+
+     mutex_lock(&dev->struct_mutex);
+
+-    gem = drm_gem_object_lookup(dev, file, handle);
++    gem = drm_gem_object_lookup(file, handle);
+
+     if (gem == NULL)
+     {
