@@ -19,7 +19,7 @@ SRC_URI="https://github.com/atom/atom/archive/v${MPV}.tar.gz -> ${P}.tar.gz"
 RESTRICT="mirror"
 LICENSE="MIT"
 SLOT="0"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64"
 IUSE=""
 
 DEPEND="${PYTHON_DEPS}
@@ -65,15 +65,14 @@ src_prepare() {
 }
 
 src_compile() {
-	./script/build --verbose --build-dir "${T}" || die "Failed to compile"
-	mv "${T}/Atom Beta" "${T}/Atom" || die "no Atom Beta binary found"
-	"${T}/Atom/resources/app/apm/bin/apm" rebuild || die "Failed to rebuild native module"
-	echo "python = $PYTHON" >> "${T}/Atom/resources/app/apm/.apmrc"
+	./script/build --verbose || die "Failed to compile"
+	"${S}/out/${PN}-beta-${MPV}-amd64/resources/app/apm/bin/apm" rebuild || die "Failed to rebuild native module"
+	echo "python = $PYTHON" >> "${S}/out/${PN}-beta-${MPV}-amd64/resources/app/apm/.apmrc"
 }
 
 src_install() {
 	insinto "/usr/share/${PN}"
-	doins -r "${T}/Atom"/*
+	doins -r "${S}/out/${PN}-beta-${MPV}-amd64"/*
 	insinto "/usr/share/applications"
 	newins resources/linux/Atom.desktop atom.desktop
 	insinto "/usr/share/pixmaps"
