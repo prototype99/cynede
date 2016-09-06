@@ -22,8 +22,7 @@ SLOT="0"
 KEYWORDS="~amd64 ~x86"
 IUSE=""
 
-DEPEND="
-	${PYTHON_DEPS}
+DEPEND="${PYTHON_DEPS}
 	net-libs/nodejs[npm]
 	media-fonts/inconsolata
 	gnome-base/gconf
@@ -43,7 +42,7 @@ pkg_setup() {
 	npm config set python $PYTHON
 }
 
-src_prepare(){
+src_prepare() {
 	epatch "${FILESDIR}/${PN}-python.patch"
 	sed -i  -e "/exception-reporting/d" \
 		-e "/metrics/d" package.json
@@ -65,14 +64,14 @@ src_prepare(){
 	default
 }
 
-src_compile(){
+src_compile() {
 	./script/build --verbose --build-dir "${T}" || die "Failed to compile"
-	mv "${T}/Atom Beta" "${T}/Atom"
+	mv "${T}/Atom Beta" "${T}/Atom" || die "no Atom Beta binary found"
 	"${T}/Atom/resources/app/apm/bin/apm" rebuild || die "Failed to rebuild native module"
 	echo "python = $PYTHON" >> "${T}/Atom/resources/app/apm/.apmrc"
 }
 
-src_install(){
+src_install() {
 	insinto "/usr/share/${PN}"
 	doins -r "${T}/Atom"/*
 	insinto "/usr/share/applications"
