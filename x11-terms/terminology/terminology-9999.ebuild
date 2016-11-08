@@ -12,6 +12,7 @@ DESCRIPTION="EFL based terminal emulator"
 HOMEPAGE="http://www.enlightenment.org/p.php?p=about/terminology"
 
 IUSE=""
+KEYWORDS="~amd64"
 
 RDEPEND=">=dev-libs/efl-9999"
 
