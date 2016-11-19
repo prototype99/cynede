@@ -73,7 +73,7 @@ RDEPEND="
 	tools? ( !media-video/nvidia-settings )
 	wayland? ( dev-libs/wayland )
 	X? (
-		<x11-base/xorg-server-1.18.99:=
+		x11-base/xorg-server
 		>=x11-libs/libvdpau-1.0
 		multilib? (
 			>=x11-libs/libX11-1.6.2[abi_x86_32]
