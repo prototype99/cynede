@@ -175,10 +175,16 @@ pkg_setup() {
 src_prepare() {
 	if use tools; then
 		cp "${DISTDIR}"/nvml.h-${PV} "${S}"/nvidia-settings-${PV}/src/nvml.h || die
-		sed -i -e 's|-lnvidia-ml|-L../../ &|g' nvidia-settings-${PV}/src/Makefile || die
-	fi
 
-	eapply "${FILESDIR}"/${P}-profiles-rc.patch
+		ln -s libnvidia-ml.so.${PV} libnvidia-ml.so || die
+		if use multilib; then
+			pushd 32/ 2>/dev/null || die
+			ln -s libnvidia-ml.so.${PV} libnvidia-ml.so || die
+			popd 2>/dev/null || die
+		fi
+
+		sed -i -e "s|-lnvidia-ml|-L../../ &|g" nvidia-settings-${PV}/src/Makefile || die
+	fi
 
 	if use pax_kernel; then
 		ewarn "Using PAX patches is not supported. You will be asked to"
@@ -345,6 +351,9 @@ src_install() {
 
 	if use X; then
 		doexe ${NV_OBJ}/nvidia-xconfig
+
+		insinto /etc/vulkan/icd.d
+		doins nvidia_icd.json
 	fi
 
 	if use kernel_linux; then
@@ -401,9 +410,6 @@ src_install() {
 
 		exeinto /etc/X11/xinit/xinitrc.d
 		newexe "${FILESDIR}"/95-nvidia-settings-r1 95-nvidia-settings
-
-		insinto /etc/vulkan/icd.d
-		doins nvidia_icd.json
 	fi
 
 	dobin ${NV_OBJ}/nvidia-bug-report.sh
