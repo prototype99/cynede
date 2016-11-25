@@ -24,7 +24,6 @@ SRC_URI="
 	x86? ( ${NV_URI}Linux-x86/${PV}/${X86_NV_PACKAGE}.run )
 	tools? (
 		ftp://download.nvidia.com/XFree86/nvidia-settings/nvidia-settings-${PV}.tar.bz2
-		https://raw.githubusercontent.com/NVIDIA/nvidia-settings/168e17f53098254b4a5ab93eeb2f23c80ca1d97f/src/nvml.h -> nvml.h-${PV}
 	)
 "
 
@@ -173,18 +172,7 @@ pkg_setup() {
 }
 
 src_prepare() {
-	if use tools; then
-		cp "${DISTDIR}"/nvml.h-${PV} "${S}"/nvidia-settings-${PV}/src/nvml.h || die
-
-		ln -s libnvidia-ml.so.${PV} libnvidia-ml.so || die
-		if use multilib; then
-			pushd 32/ 2>/dev/null || die
-			ln -s libnvidia-ml.so.${PV} libnvidia-ml.so || die
-			popd 2>/dev/null || die
-		fi
-
-		sed -i -e "s|-lnvidia-ml|-L../../ &|g" nvidia-settings-${PV}/src/Makefile || die
-	fi
+	eapply "${FILESDIR}"/${P}-profiles-rc.patch
 
 	if use pax_kernel; then
 		ewarn "Using PAX patches is not supported. You will be asked to"
