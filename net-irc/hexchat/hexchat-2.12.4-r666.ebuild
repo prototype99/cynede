@@ -17,6 +17,7 @@ if [[ "${PV}" == "9999" ]] ; then
 else
 	SRC_URI="https://github.com/Cynede/hexchat/archive/v${PV}_stupid.tar.gz -> ${P}.tar.gz"
 	KEYWORDS="~alpha ~amd64 ~arm ~hppa ~ia64 ~ppc ~ppc64 ~sparc ~x86 ~amd64-linux"
+	S="${WORKDIR}/${P}_stupid"
 fi
 
 LICENSE="GPL-2 plugin-fishlim? ( MIT )"
