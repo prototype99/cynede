@@ -24,7 +24,7 @@ DESCRIPTION="The Zen Kernel Live Sources"
 HOMEPAGE="https://zen-kernel.org"
 
 IUSE=""
-KEYWORDS=""
+KEYWORDS="~amd64"
 
 K_EXTRAEINFO="For more info on zen-sources, and for how to report problems, see: \
 ${HOMEPAGE}, also go to #zen-sources on freenode"
