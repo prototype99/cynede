@@ -30,7 +30,7 @@ KEYWORDS="~amd64 ~arm ~x86 ~amd64-linux ~x86-linux"
 SLOT="0"
 IUSE="
 	all-modules aqua boost cg doc examples imaging ffmpeg gdal java json kaapi mpi
-	mysql odbc offscreen postgres python qt5 rendering smp tbb test theora tk tcl
+	mysql odbc offscreen opengl postgres python qt5 rendering smp tbb test theora tk tcl
 	video_cards_nvidia views web xdmf2 R +X"
 
 REQUIRED_USE="
@@ -250,6 +250,10 @@ src_configure() {
 		mycmakeargs+=( -DVTK_SMP_IMPLEMENTATION_TYPE="TBB" )
 	else
 		mycmakeargs+=( -DVTK_SMP_IMPLEMENTATION_TYPE="Sequential" )
+	fi
+
+	if use opengl; then
+		mycmakeargs+=( -DVTK_RENDERING_BACKEND="OpenGL2" )
 	fi
 
 	if use java; then
