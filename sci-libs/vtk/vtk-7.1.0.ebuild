@@ -191,9 +191,6 @@ src_configure() {
 		-DVTK_USE_GL2PS=ON
 		-DVTK_USE_LARGE_DATA=ON
 		-DVTK_USE_PARALLEL=ON
-	)
-
-	mycmakeargs+=(
 		-DVTK_EXTRA_COMPILER_WARNINGS=ON
 		-DVTK_Group_StandAlone=ON
 	)
@@ -207,6 +204,7 @@ src_configure() {
 		$(cmake-utils_use imaging VTK_Group_Imaging)
 		$(cmake-utils_use mpi VTK_Group_MPI)
 		$(cmake-utils_use rendering VTK_Group_Rendering)
+		$(cmake-utils_use rendering Module_vtkTestingRendering)
 		$(cmake-utils_use tk VTK_Group_Tk)
 		$(cmake-utils_use views VTK_Group_Views)
 		$(cmake-utils_use web VTK_Group_Web)
