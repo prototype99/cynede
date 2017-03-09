@@ -34,7 +34,6 @@ esac
 DEPEND=">=app-admin/eselect-1.4.8-r100"
 RDEPEND="${DEPEND}
 	!app-eselect/eselect-blas
-	!app-eselect/eselect-cblas
 	!app-eselect/eselect-lapack"
 
 # @ECLASS-VARIABLE: ALTERNATIVES_DIR
