@@ -107,6 +107,9 @@ src_unpack() {
 src_prepare() {
 	default
 
+	# display warnings in warnings colors
+	epatch "${FILESDIR}/compile_output.patch"
+
 	# disable unwanted plugins
 	for plugin in "${QTC_PLUGINS[@]#[+-]}"; do
 		if ! use ${plugin%:*}; then
