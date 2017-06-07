@@ -110,6 +110,9 @@ src_prepare() {
 	# display warnings in warnings colors
 	epatch "${FILESDIR}/compile_output.patch"
 
+	# ability to hide the menu with ctrl+shift+m
+	epatch "${FILESDIR}/hide_menu.patch"
+
 	# disable unwanted plugins
 	for plugin in "${QTC_PLUGINS[@]#[+-]}"; do
 		if ! use ${plugin%:*}; then
