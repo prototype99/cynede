@@ -28,6 +28,7 @@ DEPEND="${PYTHON_DEPS}
 	dev-python/pygobject:3[${PYTHON_USEDEP}]
 	x11-libs/gtk+:3
 	dev-libs/libappindicator:3
+	dev-python/pydbus
 	dev-python/urllib3[${PYTHON_USEDEP}]
 	"
 RDEPEND="${DEPEND}
