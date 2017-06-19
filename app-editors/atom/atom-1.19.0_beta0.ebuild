@@ -23,7 +23,6 @@ KEYWORDS="~amd64"
 IUSE=""
 
 DEPEND="${PYTHON_DEPS}
-	<net-libs/nodejs-7.0
 	>net-libs/nodejs-6.0
 	media-fonts/inconsolata
 	gnome-base/gconf
