@@ -107,6 +107,15 @@ src_unpack() {
 src_prepare() {
 	default
 
+	# display warnings in warnings colors
+	epatch "${FILESDIR}/compile_output.patch"
+
+	# ability to hide the menu with ctrl+shift+m
+	epatch "${FILESDIR}/hide_menu.patch"
+
+	# collapse toolbutton for project tree
+	epatch "${FILESDIR}/collapse.patch"
+
 	# disable unwanted plugins
 	for plugin in "${QTC_PLUGINS[@]#[+-]}"; do
 		if ! use ${plugin%:*}; then
