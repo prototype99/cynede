@@ -59,7 +59,7 @@ fi
 
 LICENSE="LGPL-2.1"
 SLOT="0"
-IUSE="+abi_x86_32 +abi_x86_64 +alsa capi cups custom-cflags d3d9 dos elibc_glibc +fontconfig +gecko gphoto2 gsm gstreamer +jpeg kernel_FreeBSD +lcms ldap +mono mp3 ncurses netapi nls odbc openal opencl +opengl osmesa oss +perl pcap pipelight +png prelink pulseaudio +realtime +run-exes s3tc samba scanner selinux +ssl +staging test themes +threads +truetype udev +udisks v4l vaapi +X +xcomposite xinerama +xml"
+IUSE="+overwatch +abi_x86_32 +abi_x86_64 +alsa capi cups custom-cflags d3d9 dos elibc_glibc +fontconfig +gecko gphoto2 gsm gstreamer +jpeg kernel_FreeBSD +lcms ldap +mono mp3 ncurses netapi nls odbc openal opencl +opengl osmesa oss +perl pcap pipelight +png prelink pulseaudio +realtime +run-exes s3tc samba scanner selinux +ssl +staging test themes +threads +truetype udev +udisks v4l vaapi +X +xcomposite xinerama +xml"
 REQUIRED_USE="|| ( abi_x86_32 abi_x86_64 )
 	X? ( truetype )
 	elibc_glibc? ( threads )
@@ -387,6 +387,17 @@ src_prepare() {
 			PATCHES+=( "${D3D9_DIR}/d3d9-helper.patch" )
 		fi
 		PATCHES+=( "${D3D9_DIR}/wine-d3d9.patch" )
+	fi
+	if use overwatch; then
+		if !use staging; then
+			PATCHES+=( "${FILESDIR}/${PN}-${PV}-overwatch-staging.patch" )
+		fi
+		PATCHES+=( "${FILESDIR}/${PV}-overwatch/0000-Overwatch.patch" )
+		PATCHES+=( "${FILESDIR}/${PV}-overwatch/0001-Partially-implement-BCryptImportKey.patch" )
+		PATCHES+=( "${FILESDIR}/${PV}-overwatch/0002-Remove-an-assert-from-wined3d.patch" )
+		PATCHES+=( "${FILESDIR}/${PV}-overwatch/0003-Fix-mouse-input-not-working-after-respawn.patch" )
+		PATCHES+=( "${FILESDIR}/${PV}-overwatch/0004-Add-stubs-to-satisfy-Overwatch.patch" )
+		PATCHES+=( "${FILESDIR}/${PV}-overwatch/0005-Edit-README.patch" )
 	fi
 
 	default

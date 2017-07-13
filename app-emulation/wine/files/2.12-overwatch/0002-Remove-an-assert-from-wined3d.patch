@@ -1,0 +1,28 @@
+From 21029fd264361bc7983dbe75fdc7da78f5c947fa Mon Sep 17 00:00:00 2001
+From: gamax92 <gamax92@aol.com>
+Date: Wed, 12 Jul 2017 10:06:44 -0600
+Subject: [PATCH 2/5] Remove an assert from wined3d
+
+This new assert causes a crash whenever you enter a game
+---
+ dlls/wined3d/wined3d_private.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/dlls/wined3d/wined3d_private.h b/dlls/wined3d/wined3d_private.h
+index 8e90f0cf5c..4468c6076f 100644
+--- a/dlls/wined3d/wined3d_private.h
++++ b/dlls/wined3d/wined3d_private.h
+@@ -4306,8 +4306,8 @@ static inline struct wined3d_surface *context_get_rt_surface(const struct wined3
+ 
+ static inline void wined3d_from_cs(struct wined3d_cs *cs)
+ {
+-    if (cs->thread)
+-        assert(cs->thread_id == GetCurrentThreadId());
++    //if (cs->thread)
++        //assert(cs->thread_id == GetCurrentThreadId());
+ }
+ 
+ static inline void wined3d_not_from_cs(struct wined3d_cs *cs)
+-- 
+2.13.2
+
