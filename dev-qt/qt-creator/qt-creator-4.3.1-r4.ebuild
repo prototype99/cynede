@@ -116,6 +116,9 @@ src_prepare() {
 	# collapse toolbutton for project tree
 	epatch "${FILESDIR}/collapse.patch"
 
+	# mode-selector-hotkey
+	epatch "${FILESDIR}/alt-f12.patch"
+
 	# disable unwanted plugins
 	for plugin in "${QTC_PLUGINS[@]#[+-]}"; do
 		if ! use ${plugin%:*}; then
