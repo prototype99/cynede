@@ -398,6 +398,7 @@ src_prepare() {
 		PATCHES+=( "${FILESDIR}/${PV}-overwatch/0003-Fix-mouse-input-not-working-after-respawn.patch" )
 		PATCHES+=( "${FILESDIR}/${PV}-overwatch/0004-Add-stubs-to-satisfy-Overwatch.patch" )
 		PATCHES+=( "${FILESDIR}/${PV}-overwatch/0005-Edit-README.patch" )
+		PATCHES+=( "${FILESDIR}/${PV}-overwatch/0006-Fix-PTR.patch" )
 	fi
 
 	default

@@ -1,0 +1,48 @@
+From 0f27126df53274197479cb66112067adb7445378 Mon Sep 17 00:00:00 2001
+From: gamax92 <gamax92@aol.com>
+Date: Thu, 13 Jul 2017 21:50:43 -0600
+Subject: [PATCH] ws2_32: Stub implement SO_RANDOMIZE_PORT
+
+Overwatch's PTR checks the return value of setsockopt and will assert if
+it fails, so put in a check for SO_RANDOMIZE_PORT and return 0.
+---
+ dlls/ws2_32/socket.c | 4 ++++
+ include/winsock.h    | 3 +++
+ 2 files changed, 7 insertions(+)
+
+diff --git a/dlls/ws2_32/socket.c b/dlls/ws2_32/socket.c
+index fac47d7852..334fdda443 100644
+--- a/dlls/ws2_32/socket.c
++++ b/dlls/ws2_32/socket.c
+@@ -5957,6 +5957,10 @@ int WINAPI WS_setsockopt(SOCKET s, int level, int optname,
+             break;
+ #endif
+ 
++        case WS_SO_RANDOMIZE_PORT:
++            FIXME("SO_RANDOMIZE_PORT: %x\n", *(uint16_t*)optval);
++            return 0;
++
+         default:
+             TRACE("Unknown SOL_SOCKET optname: 0x%08x\n", optname);
+             SetLastError(WSAENOPROTOOPT);
+diff --git a/include/winsock.h b/include/winsock.h
+index 2feb22466e..3d67c27c54 100644
+--- a/include/winsock.h
++++ b/include/winsock.h
+@@ -664,6 +664,7 @@ typedef struct WS(WSAData)
+ #define SO_TYPE                    0x1008
+ #define SO_BSP_STATE               0x1009
+ 
++#define SO_RANDOMIZE_PORT          0x3005
+ 
+ #define IOCPARM_MASK               0x7f
+ #define IOC_VOID                   0x20000000
+@@ -699,6 +700,8 @@ typedef struct WS(WSAData)
+ #define WS_SO_TYPE                 0x1008
+ #define WS_SO_BSP_STATE            0x1009
+ 
++#define WS_SO_RANDOMIZE_PORT       0x3005
++
+ #define WS_IOCPARM_MASK            0x7f
+ #define WS_IOC_VOID                0x20000000
+ #define WS_IOC_OUT                 0x40000000
