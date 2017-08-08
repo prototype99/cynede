@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 # $Id$
 
-EAPI="5"
+EAPI=6
 
 K_PREPATCHED="yes"
 UNIPATCH_STRICTORDER="yes"
@@ -16,7 +16,7 @@ EGIT_BRANCH="${PV/.9999/}/master"
 EGIT_REPO_URI="git://github.com/zen-kernel/zen-kernel.git
 	https://github.com/zen-kernel/zen-kernel.git"
 
-inherit kernel-2 git-2
+inherit kernel-2 git-r3
 detect_version
 
 K_NOSETEXTRAVERSION="don't_set_it"
