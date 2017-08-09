@@ -29,10 +29,12 @@ KEYWORDS="~amd64"
 K_EXTRAEINFO="For more info on zen-sources, and for how to report problems, see: \
 ${HOMEPAGE}, also go to #zen-sources on freenode"
 
-pkg_setup(){
-	ewarn "Be carefull!! You are about to install live kernel sources."
-	ewarn "Git zen-sources are extremely unsupported, even from the upstream"
-	ewarn "developers. Use them at your own risk and don't bite us if your"
-	ewarn "system explodes"
-	kernel-2_pkg_setup
+S="${WORKDIR}/${P}"
+
+src_install() {
+	cd "${WORKDIR}"
+	dodir /usr/src
+	echo ">>> Copying sources ..."
+
+	mv "${S}" "${ED}"usr/src/linux-${PV/.9999/} || die
 }
