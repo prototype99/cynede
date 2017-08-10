@@ -36,5 +36,5 @@ src_install() {
 	dodir /usr/src
 	echo ">>> Copying sources ..."
 
-	mv "${S}" "${ED}"usr/src/linux-${PV/.9999/} || die
+	mv "${S}" "${ED}"usr/src/linux-${PV}-zen0 || die
 }
