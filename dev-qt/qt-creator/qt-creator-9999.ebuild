@@ -22,11 +22,10 @@ else
 	MY_P=${PN}-opensource-src-${MY_PV}
 	[[ ${MY_PV} == ${PV} ]] && MY_REL=official || MY_REL=development
 	SRC_URI="http://download.qt.io/${MY_REL}_releases/${PN/-}/${PV%.*}/${MY_PV}/${MY_P}.tar.xz"
-	KEYWORDS="~amd64 ~arm ~x86"
 	S=${WORKDIR}/${MY_P}
 fi
 
-# TODO: unbundle sqlite
+KEYWORDS="~amd64 ~arm ~x86"
 
 QTC_PLUGINS=('android:android|qmakeandroidsupport' autotools:autotoolsprojectmanager baremetal bazaar
 	'clangcodemodel:clangcodemodel|clangrefactoring|clangpchmanager' clangstaticanalyzer clearcase
