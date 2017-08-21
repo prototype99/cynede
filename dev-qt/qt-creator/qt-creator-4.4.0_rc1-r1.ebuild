@@ -114,7 +114,7 @@ src_prepare() {
 	epatch "${FILESDIR}/hide_menu.patch"
 
 	# collapse toolbutton for project tree
-	epatch "${FILESDIR}/collapse.patch"
+	epatch "${FILESDIR}/collapse2.patch"
 
 	# mode-selector-hotkey
 	epatch "${FILESDIR}/alt-f12.patch"
