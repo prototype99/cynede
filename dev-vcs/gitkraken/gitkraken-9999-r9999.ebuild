@@ -6,8 +6,8 @@ EAPI=5
 
 inherit eutils
 DESCRIPTION="cross-platform Git client"
-HOMEPAGE="http://www.gitkraken.com"
-SRC_URI="http://release.gitkraken.com/linux/gitkraken-amd64.deb"
+HOMEPAGE="https://www.gitkraken.com"
+SRC_URI="https://release.gitkraken.com/linux/gitkraken-amd64.deb"
 
 SLOT="0"
 KEYWORDS="~amd64"
