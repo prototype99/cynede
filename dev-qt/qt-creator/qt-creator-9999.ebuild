@@ -13,10 +13,8 @@ SLOT="0"
 
 if [[ ${PV} == *9999 ]]; then
 	inherit git-r3
-	EGIT_REPO_URI=(
-		"git://code.qt.io/${PN}/${PN}.git"
-		"https://code.qt.io/git/${PN}/${PN}.git"
-	)
+	EGIT_REPO_URI="https://github.com/mpkh/aina.git"
+	EGIT_BRANCH="aina"
 else
 	MY_PV=${PV/_/-}
 	MY_P=${PN}-opensource-src-${MY_PV}
@@ -105,18 +103,6 @@ src_unpack() {
 
 src_prepare() {
 	default
-
-	# display warnings in warnings colors
-	epatch "${FILESDIR}/compile_output.patch"
-
-	# ability to hide the menu with ctrl+shift+m
-	epatch "${FILESDIR}/hide_menu.patch"
-
-	# collapse toolbutton for project tree
-	epatch "${FILESDIR}/collapse2.patch"
-
-	# mode-selector-hotkey
-	epatch "${FILESDIR}/alt-f12.patch"
 
 	# disable unwanted plugins
 	for plugin in "${QTC_PLUGINS[@]#[+-]}"; do
