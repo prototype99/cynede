@@ -32,6 +32,14 @@ src_prepare() {
 }
 
 src_install(){
-	doins -r opt usr
+	doins -r opt
 	fperms 755 /opt/COMODO/cav
+	fperms 755 /opt/COMODO/cavdiagnostic
+	fperms 755 /opt/COMODO/cavlogviewer
+	fperms 755 /opt/COMODO/cavscan
+	fperms 755 /opt/COMODO/cavupdater
+	fperms 755 /opt/COMODO/cmdagent
+	fperms 755 /opt/COMODO/cmdscan
+	fperms 755 /opt/COMODO/cmdtcpd
+	fperms 755 /opt/COMODO/cmgdaemon
 }
