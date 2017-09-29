@@ -24,6 +24,7 @@ IUSE=""
 
 RDEPEND="dev-haskell/eternal:=[profile?]
 	dev-haskell/missingh:=[profile?]
+	dev-haskell/split
 	>=dev-lang/ghc-7.4.1:=
 "
 DEPEND="${RDEPEND}
