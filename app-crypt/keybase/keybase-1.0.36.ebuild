@@ -16,10 +16,8 @@ SLOT="0"
 KEYWORDS="~amd64 ~x86"
 IUSE=""
 
-DEPEND="
-	>=dev-lang/go-1.6:0"
-RDEPEND="
-	app-crypt/gnupg"
+DEPEND=">=dev-lang/go-1.6:0"
+RDEPEND="app-crypt/gnupg"
 
 S="${WORKDIR}/src/github.com/keybase/client"
 
@@ -27,6 +25,12 @@ src_unpack() {
 	unpack "${P}.tar.gz"
 	mkdir -p "$(dirname "${S}")" || die
 	mv "client-${MY_PV}" "${S}" || die
+}
+
+src_prepare() {
+	# https://www.youtube.com/watch?v=ABhDiXbUaBE
+	sed -i '/checkSystemUser(g.Log)/d' "${S}/go/keybase/main.go" || die
+	default
 }
 
 src_compile() {
@@ -39,6 +43,7 @@ src_compile() {
 
 src_install() {
 	dobin "${T}/keybase"
+	dobin "${S}/packaging/linux/run_keybase"
 }
 
 pkg_postinst() {
