@@ -43,7 +43,6 @@ src_compile() {
 
 src_install() {
 	dobin "${T}/keybase"
-	dobin "${S}/packaging/linux/run_keybase"
 }
 
 pkg_postinst() {
