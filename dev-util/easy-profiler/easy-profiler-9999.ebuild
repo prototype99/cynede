@@ -29,7 +29,7 @@ DEPEND="${RDEPEND}"
 RESTRICT=test
 
 src_install() {
-	dobin "${S}/bin/profiler_gui"
-	dobin "${S}/bin/profiler_reader"
-	dolib.so "${S}/bin/libeasy_profiler.so"
+	dobin "${BUILD_DIR}/bin/profiler_gui"
+	dobin "${BUILD_DIR}/bin/profiler_reader"
+	dolib.so "${BUILD_DIR}/bin/libeasy_profiler.so"
 }
