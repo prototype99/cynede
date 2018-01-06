@@ -31,7 +31,8 @@ DEPEND="${RDEPEND}
 	x11-libs/gtk+
 	x11-libs/libnotify
 	x11-libs/libxcb
-	x11-libs/libXtst"
+	x11-libs/libXtst
+	media-libs/opus"
 
 S=${WORKDIR}/DiscordCanary
 
