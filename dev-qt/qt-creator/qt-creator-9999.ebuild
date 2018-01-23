@@ -1,13 +1,13 @@
-# Copyright 1999-2017 Gentoo Foundation
+# Copyright 1999-2018 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=6
-PLOCALES="cs de fr ja pl ru sl uk zh_CN zh_TW"
+PLOCALES="cs de fr ja pl ru sl uk zh-CN zh-TW"
 
-inherit eutils l10n llvm qmake-utils toolchain-funcs virtualx xdg
+inherit llvm qmake-utils toolchain-funcs virtualx xdg
 
 DESCRIPTION="Lightweight IDE for C++/QML development centering around Qt"
-HOMEPAGE="http://doc.qt.io/qtcreator/"
+HOMEPAGE="https://doc.qt.io/qtcreator/"
 LICENSE="GPL-3"
 SLOT="0"
 
@@ -19,11 +19,12 @@ else
 	MY_PV=${PV/_/-}
 	MY_P=${PN}-opensource-src-${MY_PV}
 	[[ ${MY_PV} == ${PV} ]] && MY_REL=official || MY_REL=development
-	SRC_URI="http://download.qt.io/${MY_REL}_releases/${PN/-}/${PV%.*}/${MY_PV}/${MY_P}.tar.xz"
+	SRC_URI="https://download.qt.io/${MY_REL}_releases/${PN/-}/${PV%.*}/${MY_PV}/${MY_P}.tar.xz"
+	KEYWORDS="~amd64 ~arm ~x86"
 	S=${WORKDIR}/${MY_P}
 fi
 
-KEYWORDS="~amd64 ~arm ~x86"
+# TODO: unbundle sqlite
 
 QTC_PLUGINS=('android:android|qmakeandroidsupport' autotools:autotoolsprojectmanager baremetal bazaar
 	'clangcodemodel:clangcodemodel|clangrefactoring|clangpchmanager' clangstaticanalyzer clearcase
@@ -33,7 +34,7 @@ QTC_PLUGINS=('android:android|qmakeandroidsupport' autotools:autotoolsprojectman
 IUSE="doc systemd test +webengine ${QTC_PLUGINS[@]%:*}"
 
 # minimum Qt version required
-QT_PV="5.6.0:5"
+QT_PV="5.6.2:5"
 
 CDEPEND="
 	=dev-libs/botan-1.10*[-bindist,threads]
@@ -53,7 +54,7 @@ CDEPEND="
 	>=dev-qt/qtxml-${QT_PV}
 	clangcodemodel? ( >=sys-devel/clang-3.9:= )
 	designer? ( >=dev-qt/designer-${QT_PV} )
-	qbs? ( >=dev-util/qbs-1.7.0 )
+	qbs? ( >=dev-util/qbs-1.9.1 )
 	systemd? ( sys-apps/systemd:= )
 	webengine? ( >=dev-qt/qtwebengine-${QT_PV}[widgets] )
 "
@@ -72,7 +73,7 @@ RDEPEND="${CDEPEND}
 	autotools? ( sys-devel/autoconf )
 	bazaar? ( dev-vcs/bzr )
 	clangstaticanalyzer? ( >=sys-devel/clang-3.9:* )
-	cmake? ( dev-util/cmake )
+	cmake? ( dev-util/cmake[server(+)] )
 	cvs? ( dev-vcs/cvs )
 	git? ( dev-vcs/git )
 	mercurial? ( dev-vcs/mercurial )
@@ -85,6 +86,10 @@ for x in ${PLOCALES}; do
 	RDEPEND+=" l10n_${x}? ( >=dev-qt/qttranslations-${QT_PV} )"
 done
 unset x
+
+pkg_setup() {
+	use clangcodemodel && llvm_pkg_setup
+}
 
 src_unpack() {
 	if tc-is-gcc; then
@@ -131,17 +136,22 @@ src_prepare() {
 	fi
 
 	# disable broken or unreliable tests
-	sed -i -e '/SUBDIRS/ s/\<dumpers\>//' tests/auto/debugger/debugger.pro || die
+	sed -i -e 's/\(manual\|tools\|unit\)//g' tests/tests.pro || die
+	sed -i -e '/sdktool/ d' tests/auto/auto.pro || die
+	sed -i -e '/\(dumpers\|offsets\)\.pro/ d' tests/auto/debugger/debugger.pro || die
 	sed -i -e '/CONFIG -=/ s/$/ testcase/' tests/auto/extensionsystem/pluginmanager/correctplugins1/plugin?/plugin?.pro || die
-	sed -i -e '/\(^char qmlString\|states\.qml$\)/ i return;' tests/auto/qml/qmldesigner/coretests/tst_testcore.cpp || die
-	sed -i -e 's/\<timeline\(items\|notes\|selection\)renderpass\>//' tests/auto/timeline/timeline.pro || die
+	sed -i -e '/timeline\(items\|notes\|selection\)renderpass/ d' tests/auto/timeline/timeline.pro || die
 	sed -i -e 's/\<memcheck\>//' tests/auto/valgrind/valgrind.pro || die
 
 	# fix path to some clang headers
 	sed -i -e "/^CLANG_RESOURCE_DIR\s*=/ s:\$\${LLVM_LIBDIR}:${EPREFIX}/usr/lib:" src/shared/clang/clang_defines.pri || die
 
 	# fix translations
-	sed -i -e "/^LANGUAGES\s*=/ s:=.*:= $(l10n_get_locales):" share/qtcreator/translations/translations.pro || die
+	local lang languages=
+	for lang in ${PLOCALES}; do
+		use l10n_${lang} && languages+=" ${lang/-/_}"
+	done
+	sed -i -e "/^LANGUAGES\s*=/ s:=.*:=${languages}:" share/qtcreator/translations/translations.pro || die
 
 	# remove bundled qbs
 	rm -rf src/shared/qbs || die
@@ -176,8 +186,4 @@ src_install() {
 		doins share/doc/qtcreator/qtcreator{,-dev}.qch
 		docompress -x /usr/share/doc/qtcreator/qtcreator{,-dev}.qch
 	fi
-
-	# create a desktop file
-	make_desktop_entry qtcreator 'Qt Creator' QtProject-qtcreator 'Development;IDE;Qt;' \
-		'MimeType=text/x-c++src;text/x-c++hdr;text/x-xsrc;application/x-designer;application/vnd.qt.qmakeprofile;application/vnd.qt.xml.resource;text/x-qml;text/x-qt.qml;text/x-qt.qbs;'
 }
