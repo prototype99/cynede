@@ -24,8 +24,6 @@ else
 	S=${WORKDIR}/${MY_P}
 fi
 
-# TODO: unbundle sqlite
-
 QTC_PLUGINS=('android:android|qmakeandroidsupport' autotools:autotoolsprojectmanager baremetal bazaar
 	'clangcodemodel:clangcodemodel|clangrefactoring|clangpchmanager' clangstaticanalyzer clearcase
 	cmake:cmakeprojectmanager cvs designer git glsl:glsleditor ios mercurial modeling:modeleditor
@@ -52,8 +50,7 @@ CDEPEND="
 	>=dev-qt/qtwidgets-${QT_PV}
 	>=dev-qt/qtx11extras-${QT_PV}
 	>=dev-qt/qtxml-${QT_PV}
-	>=dev-qt/qtserialport-${QT_PV}
-	clangcodemodel? ( >=sys-devel/clang-3.9:= )
+	clangcodemodel? ( >=sys-devel/clang-5:= )
 	designer? ( >=dev-qt/designer-${QT_PV} )
 	qbs? ( >=dev-util/qbs-1.9.1 )
 	systemd? ( sys-apps/systemd:= )
