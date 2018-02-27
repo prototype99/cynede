@@ -6,9 +6,9 @@ PYTHON_COMPAT=( python{2_7,3_4,3_5,3_6} pypy )
 
 inherit distutils-r1 git-r3
 
-DESCRIPTION="A simple Taskwarrior hook allowing one to track total time spent on a task."
-HOMEPAGE="https://github.com/kostajh/taskwarrior-time-tracking-hook"
-EGIT_REPO_URI="https://github.com/kostajh/taskwarrior-time-tracking-hook.git"
+DESCRIPTION="python taskwarrior api"
+HOMEPAGE="https://github.com/ralphbean/taskw"
+EGIT_REPO_URI="https://github.com/ralphbean/taskw.git"
 RESTRICT="mirror"
 
 #not sure
