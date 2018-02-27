@@ -19,4 +19,5 @@ KEYWORDS="~amd64 ~x86"
 
 DEPEND="dev-python/taskw
 	dev-python/kitchen
-	dev-python/pytz"
+	dev-python/pytz
+	python-dateutil"
