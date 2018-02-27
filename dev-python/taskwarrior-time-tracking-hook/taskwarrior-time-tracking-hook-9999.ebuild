@@ -16,20 +16,3 @@ LICENSE="GPL-2"
 
 SLOT="0"
 KEYWORDS="~amd64 ~x86"
-
-src_prepare() {
-	python_copy_sources
-	default
-}
-
-src_configure() {
-	python_foreach_impl run_in_build_dir gnome2_src_configure --disable-tests
-}
-
-src_compile() {
-	python_foreach_impl run_in_build_dir gnome2_src_compile
-}
-
-src_install() {
-	python_foreach_impl run_in_build_dir gnome2_src_install
-}
