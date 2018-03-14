@@ -1,11 +1,11 @@
-# Copyright 1999-2017 Gentoo Foundation
+# Copyright 1999-2018 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Id$
 
 EAPI=6
 
-PYTHON_COMPAT=( python{2_7,3_4,3_5} )
-inherit autotools fdo-mime gnome2-utils mono-env python-single-r1
+PYTHON_COMPAT=( python{2_7,3_4,3_5,3_6} pypy )
+inherit meson fdo-mime gnome2-utils mono-env python-single-r1
 
 DESCRIPTION="Graphical IRC client based on XChat"
 HOMEPAGE="https://hexchat.github.io/"
@@ -22,7 +22,7 @@ fi
 
 LICENSE="GPL-2 plugin-fishlim? ( MIT )"
 SLOT="0"
-IUSE="dbus debug +gtk libcanberra libnotify libproxy libressl lua nls perl plugin-checksum plugin-fishlim plugin-sysinfo python spell ssl theme-manager"
+IUSE="dbus debug +gtk libcanberra libnotify libproxy lua nls perl plugin-checksum plugin-fishlim plugin-sysinfo python spell ssl theme-manager"
 REQUIRED_USE="python? ( ${PYTHON_REQUIRED_USE} )"
 
 COMMON_DEPEND="dev-libs/glib:2
@@ -37,10 +37,7 @@ COMMON_DEPEND="dev-libs/glib:2
 	plugin-sysinfo? ( sys-apps/pciutils )
 	python? ( ${PYTHON_DEPS} )
 	spell? ( app-text/iso-codes )
-	ssl? (
-		!libressl? ( dev-libs/openssl:0= )
-		libressl? ( dev-libs/libressl:0= )
-	)
+	ssl? ( dev-libs/openssl:0= )
 	theme-manager? (
 		|| (
 			( dev-lang/mono[minimal] dev-dotnet/libgdiplus )
@@ -57,11 +54,6 @@ DEPEND="${COMMON_DEPEND}
 	sys-devel/autoconf-archive
 	theme-manager? ( dev-util/monodevelop )"
 
-PATCHES=(
-	"${FILESDIR}/hexchat-2.12.2-configure.ac-remove-werror.patch"
-	"${FILESDIR}/hexchat-2.12.4-libressl.patch"
-)
-
 src_prepare() {
 	default
 	eautoreconf
@@ -75,36 +67,32 @@ pkg_setup() {
 	fi
 }
 
-src_configure() {
-	econf \
-		--enable-plugin \
-		$(use_enable nls) \
-		$(use_enable ssl openssl) \
-		$(use_enable gtk gtkfe) \
-		$(use_enable !gtk textfe) \
-		$(use_enable python python "${EPYTHON}") \
-		$(use_enable perl) \
-		$(use_enable plugin-checksum checksum) \
-		$(use_enable plugin-fishlim fishlim) \
-		$(use_enable plugin-sysinfo sysinfo) \
-		$(use_enable dbus) \
-		$(use_enable lua) \
-		$(use_enable libnotify) \
-		$(use_enable libcanberra) \
-		$(use_enable libproxy) \
-		$(use_enable spell isocodes) \
-		$(use_enable debug) \
-		$(use_with theme-manager)
+meson_use() {
+	echo "-Dwith-${2:-${1}}=$(usex ${1} 'true' 'false')"
 }
 
-src_install() {
-	emake DESTDIR="${D}" \
-		UPDATE_ICON_CACHE=true \
-		UPDATE_MIME_DATABASE=true \
-		UPDATE_DESKTOP_DATABASE=true \
-		install
-	dodoc readme.md
-	find "${D}" -name '*.la' -delete || die
+src_configure() {
+	local emesonargs=(
+		$(meson_use nls)
+		$(meson_use ssl openssl)
+		$(meson_use gtk gtkfe)
+		$(meson_use !gtk textfe)
+		$(meson_use python)
+		$(meson_use perl)
+		$(meson_use plugin-checksum checksum)
+		$(meson_use plugin-fishlim fishlim)
+		$(meson_use plugin-sysinfo sysinfo)
+		$(meson_use dbus)
+		$(meson_use lua)
+		$(meson_use libnotify)
+		$(meson_use libcanberra)
+		$(meson_use libproxy)
+		$(meson_use spell isocodes)
+		$(meson_use debug)
+		$(meson_use theme-manager)
+	)
+
+	meson_src_configure
 }
 
 pkg_preinst() {
