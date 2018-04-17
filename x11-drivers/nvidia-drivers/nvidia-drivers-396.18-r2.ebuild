@@ -1,33 +1,31 @@
-# Copyright 1999-2017 Gentoo Foundation
+# Copyright 1999-2018 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=6
 inherit eutils flag-o-matic linux-info linux-mod multilib-minimal nvidia-driver \
 	portability toolchain-funcs unpacker user udev
 
-NV_URI="http://us.download.nvidia.com/XFree86/"
-X86_NV_PACKAGE="NVIDIA-Linux-x86-${PV}"
+DESCRIPTION="NVIDIA Accelerated Graphics Driver"
+HOMEPAGE="http://www.nvidia.com/ http://www.nvidia.com/Download/Find.aspx"
+
+AMD64_FBSD_NV_PACKAGE="NVIDIA-FreeBSD-x86_64-${PV}"
 AMD64_NV_PACKAGE="NVIDIA-Linux-x86_64-${PV}"
 ARM_NV_PACKAGE="NVIDIA-Linux-armv7l-gnueabihf-${PV}"
 X86_FBSD_NV_PACKAGE="NVIDIA-FreeBSD-x86-${PV}"
-AMD64_FBSD_NV_PACKAGE="NVIDIA-FreeBSD-x86_64-${PV}"
+X86_NV_PACKAGE="NVIDIA-Linux-x86-${PV}"
 
-DESCRIPTION="NVIDIA Accelerated Graphics Driver"
-HOMEPAGE="http://www.nvidia.com/ http://www.nvidia.com/Download/Find.aspx"
+NV_URI="http://us.download.nvidia.com/XFree86/"
 SRC_URI="
 	amd64-fbsd? ( ${NV_URI}FreeBSD-x86_64/${PV}/${AMD64_FBSD_NV_PACKAGE}.tar.gz )
 	amd64? ( ${NV_URI}Linux-x86_64/${PV}/${AMD64_NV_PACKAGE}.run )
-	arm? ( ${NV_URI}Linux-x86-ARM/${PV}/${ARM_NV_PACKAGE}.run )
-	x86-fbsd? ( ${NV_URI}FreeBSD-x86/${PV}/${X86_FBSD_NV_PACKAGE}.tar.gz )
-	x86? ( ${NV_URI}Linux-x86/${PV}/${X86_NV_PACKAGE}.run )
 	tools? (
-		ftp://download.nvidia.com/XFree86/nvidia-settings/nvidia-settings-${PV}.tar.bz2
+		https://download.nvidia.com/XFree86/nvidia-settings/nvidia-settings-${PV}.tar.bz2
 	)
 "
 
 LICENSE="GPL-2 NVIDIA-r2"
 SLOT="0/${PV%.*}"
-KEYWORDS="-* ~amd64 ~x86 ~amd64-fbsd ~x86-fbsd"
+KEYWORDS="-* ~amd64 ~amd64-fbsd"
 RESTRICT="bindist mirror"
 EMULTILIB_PKG="true"
 
@@ -65,6 +63,7 @@ COMMON="
 DEPEND="
 	${COMMON}
 	kernel_linux? ( virtual/linux-sources )
+	tools? ( sys-apps/dbus )
 "
 RDEPEND="
 	${COMMON}
@@ -79,30 +78,14 @@ RDEPEND="
 		sys-libs/zlib[${MULTILIB_USEDEP}]
 	)
 "
-
 QA_PREBUILT="opt/* usr/lib*"
-
 S=${WORKDIR}/
 
-pkg_pretend() {
+nvidia_drivers_versions_check() {
 	if use amd64 && has_multilib_profile && \
 		[ "${DEFAULT_ABI}" != "amd64" ]; then
 		eerror "This ebuild doesn't currently support changing your default ABI"
 		die "Unexpected \${DEFAULT_ABI} = ${DEFAULT_ABI}"
-	fi
-
-	if use kernel_linux && kernel_is ge 4 10; then
-		ewarn "Gentoo supports kernels which are supported by NVIDIA"
-		ewarn "which are limited to the following kernels:"
-		ewarn "<sys-kernel/gentoo-sources-4.10"
-		ewarn "<sys-kernel/vanilla-sources-4.10"
-		ewarn ""
-		ewarn "You are free to utilize epatch_user to provide whatever"
-		ewarn "support you feel is appropriate, but will not receive"
-		ewarn "support as a result of those changes."
-		ewarn ""
-		ewarn "Do not file a bug report about this."
-		ewarn ""
 	fi
 
 	# Since Nvidia ships many different series of drivers, we need to give the user
@@ -119,7 +102,13 @@ pkg_pretend() {
 	use kernel_linux && check_extra_config
 }
 
+pkg_pretend() {
+	nvidia_drivers_versions_check
+}
+
 pkg_setup() {
+	nvidia_drivers_versions_check
+
 	# try to turn off distcc and ccache for people that have a problem with it
 	export DISTCC_DISABLE=1
 	export CCACHE_DISABLE=1
@@ -171,9 +160,6 @@ pkg_setup() {
 }
 
 src_prepare() {
-	eapply "${FILESDIR}"/NVIDIA-378.13-KERNEL-4.10.patch
-	eapply "${FILESDIR}"/${P}-profiles-rc.patch
-
 	if use pax_kernel; then
 		ewarn "Using PAX patches is not supported. You will be asked to"
 		ewarn "use a standard kernel should you have issues. Should you"
@@ -181,8 +167,25 @@ src_prepare() {
 		eapply "${FILESDIR}"/${PN}-375.20-pax.patch
 	fi
 
-	# Allow user patches so they can support RC kernels and whatever else
-	eapply_user
+	local man_file
+	for man_file in "${NV_MAN}"/*1.gz; do
+		gunzip $man_file || die
+	done
+
+	if use tools; then
+		cp "${FILESDIR}"/nvidia-settings-linker.patch "${WORKDIR}" || die
+		sed -i \
+			-e "s:@PV@:${PV}:g" \
+			"${WORKDIR}"/nvidia-settings-linker.patch || die
+		eapply "${WORKDIR}"/nvidia-settings-linker.patch
+	fi
+
+	default
+
+	if ! [ -f nvidia_icd.json ]; then
+		cp nvidia_icd.json.template nvidia_icd.json || die
+		sed -i -e 's:__NV_VK_ICD__:libGLX_nvidia.so.0:g' nvidia_icd.json || die
+	fi
 }
 
 src_compile() {
@@ -202,21 +205,24 @@ src_compile() {
 		emake -C "${S}"/nvidia-settings-${PV}/src \
 			AR="$(tc-getAR)" \
 			CC="$(tc-getCC)" \
+			DO_STRIP= \
+			LD="$(tc-getCC)" \
 			LIBDIR="$(get_libdir)" \
+			NVLD="$(tc-getLD)" \
 			NV_VERBOSE=1 \
 			RANLIB="$(tc-getRANLIB)" \
-			DO_STRIP= \
 			build-xnvctrl
 
 		emake -C "${S}"/nvidia-settings-${PV}/src \
 			CC="$(tc-getCC)" \
+			DO_STRIP= \
 			GTK3_AVAILABLE=$(usex gtk3 1 0) \
 			LD="$(tc-getCC)" \
 			LIBDIR="$(get_libdir)" \
+			NVLD="$(tc-getLD)" \
 			NVML_ENABLED=0 \
 			NV_USE_BUNDLED_LIBJANSSON=0 \
-			NV_VERBOSE=1 \
-			DO_STRIP=
+			NV_VERBOSE=1
 	fi
 }
 
@@ -315,6 +321,11 @@ src_install() {
 		doins ${NV_X11}/10_nvidia.json
 	fi
 
+	if use wayland; then
+		insinto /usr/share/egl/egl_external_platform.d
+		doins ${NV_X11}/10_nvidia_wayland.json
+	fi
+
 	# OpenCL ICD for NVIDIA
 	if use kernel_linux; then
 		insinto /etc/OpenCL/vendors
@@ -324,16 +335,16 @@ src_install() {
 	# Documentation
 	if use kernel_FreeBSD; then
 		dodoc "${NV_DOC}/README"
-		use X && doman "${NV_MAN}/nvidia-xconfig.1"
-		use tools && doman "${NV_MAN}/nvidia-settings.1"
+		use X && doman "${NV_MAN}"/nvidia-xconfig.1
+		use tools && doman "${NV_MAN}"/nvidia-settings.1
 	else
 		# Docs
 		newdoc "${NV_DOC}/README.txt" README
 		dodoc "${NV_DOC}/NVIDIA_Changelog"
-		doman "${NV_MAN}/nvidia-smi.1.gz"
-		use X && doman "${NV_MAN}/nvidia-xconfig.1.gz"
-		use tools && doman "${NV_MAN}/nvidia-settings.1.gz"
-		doman "${NV_MAN}/nvidia-cuda-mps-control.1.gz"
+		doman "${NV_MAN}"/nvidia-smi.1
+		use X && doman "${NV_MAN}"/nvidia-xconfig.1
+		use tools && doman "${NV_MAN}"/nvidia-settings.1
+		doman "${NV_MAN}"/nvidia-cuda-mps-control.1
 	fi
 
 	docinto html
@@ -362,9 +373,9 @@ src_install() {
 		fperms 4710 /opt/bin/nvidia-modprobe
 		dosym /{opt,usr}/bin/nvidia-modprobe
 
-		doman nvidia-cuda-mps-control.1.gz
-		doman nvidia-modprobe.1.gz
-		doman nvidia-persistenced.1.gz
+		doman nvidia-cuda-mps-control.1
+		doman nvidia-modprobe.1
+		doman nvidia-persistenced.1
 		newinitd "${FILESDIR}/nvidia-smi.init" nvidia-smi
 		newconfd "${FILESDIR}/nvidia-persistenced.conf" nvidia-persistenced
 		newinitd "${FILESDIR}/nvidia-persistenced.init" nvidia-persistenced
@@ -427,20 +438,20 @@ src_install-libs() {
 	local inslibdir=$(get_libdir)
 	local GL_ROOT="/usr/$(get_libdir)/opengl/nvidia/lib"
 	local CL_ROOT="/usr/$(get_libdir)/OpenCL/vendors/nvidia"
-	local libdir=${NV_OBJ}
+	local nv_libdir="${NV_OBJ}"
 
 	if use kernel_linux && has_multilib_profile && [[ ${ABI} == "x86" ]]; then
-		libdir=${NV_OBJ}/32
+		nv_libdir="${NV_OBJ}"/32
 	fi
 
 	if use X; then
 		NV_GLX_LIBRARIES=(
-			"libEGL.so.$(usex compat ${NV_SOVER} 1) ${GL_ROOT}"
+			"libEGL.so.$(usex compat ${NV_SOVER} 1.1.0) ${GL_ROOT}"
 			"libEGL_nvidia.so.${NV_SOVER} ${GL_ROOT}"
-			"libGL.so.$(usex compat ${NV_SOVER} 1.0.0) ${GL_ROOT}"
-			"libGLESv1_CM.so.1 ${GL_ROOT}"
+			"libGL.so.$(usex compat ${NV_SOVER} 1.7.0) ${GL_ROOT}"
+			"libGLESv1_CM.so.1.2.0 ${GL_ROOT}"
 			"libGLESv1_CM_nvidia.so.${NV_SOVER} ${GL_ROOT}"
-			"libGLESv2.so.2 ${GL_ROOT}"
+			"libGLESv2.so.2.1.0 ${GL_ROOT}"
 			"libGLESv2_nvidia.so.${NV_SOVER} ${GL_ROOT}"
 			"libGLX.so.0 ${GL_ROOT}"
 			"libGLX_nvidia.so.${NV_SOVER} ${GL_ROOT}"
@@ -456,6 +467,7 @@ src_install-libs() {
 			"libnvidia-fbc.so.${NV_SOVER}"
 			"libnvidia-glcore.so.${NV_SOVER}"
 			"libnvidia-glsi.so.${NV_SOVER}"
+			"libnvidia-glvkspirv.so.${NV_SOVER}"
 			"libnvidia-ifr.so.${NV_SOVER}"
 			"libnvidia-opencl.so.${NV_SOVER}"
 			"libnvidia-ptxjitcompiler.so.${NV_SOVER}"
@@ -465,7 +477,7 @@ src_install-libs() {
 		if use wayland && has_multilib_profile && [[ ${ABI} == "amd64" ]];
 		then
 			NV_GLX_LIBRARIES+=(
-				"libnvidia-egl-wayland.so.${NV_SOVER}"
+				"libnvidia-egl-wayland.so.1.0.3"
 			)
 		fi
 
@@ -490,7 +502,7 @@ src_install-libs() {
 		fi
 
 		for NV_LIB in "${NV_GLX_LIBRARIES[@]}"; do
-			donvidia ${libdir}/${NV_LIB}
+			donvidia "${nv_libdir}"/${NV_LIB}
 		done
 	fi
 }
