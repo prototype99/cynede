@@ -1,8 +1,8 @@
-# Copyright 1999-2017 Gentoo Foundation
+# Copyright 1999-2018 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Id$
 
-EAPI=5
+EAPI=6
 
 inherit eutils
 DESCRIPTION="cross-platform Git client"
@@ -20,7 +20,8 @@ LICENSE="EULA"
 
 src_prepare() {
 	unpack ./control.tar.gz
-	unpack ./data.tar.gz
+	unpack ./data.tar.xz
+	default
 }
 
 src_install() {
