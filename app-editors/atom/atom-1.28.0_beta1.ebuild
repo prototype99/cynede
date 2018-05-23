@@ -1,4 +1,4 @@
-# Copyright 1999-2017 Gentoo Foundation
+# Copyright 1999-2018 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Id$
 
@@ -63,6 +63,8 @@ src_prepare() {
 }
 
 src_compile() {
+	addwrite "/usr/etc"
+	mkdir -p "/usr/etc"
 	./script/build --verbose || die "Failed to compile"
 	"${S}/out/${PN}-beta-${MPV}-amd64/resources/app/apm/bin/apm" rebuild || die "Failed to rebuild native module"
 	echo "python = $PYTHON" >> "${S}/out/${PN}-beta-${MPV}-amd64/resources/app/apm/.apmrc"
