@@ -35,7 +35,6 @@ IUSE="doc systemd test +webengine ${QTC_PLUGINS[@]%:*}"
 QT_PV="5.6.2:5"
 
 CDEPEND="
-	=dev-libs/botan-1.10*[-bindist,threads]
 	>=dev-qt/qtconcurrent-${QT_PV}
 	>=dev-qt/qtcore-${QT_PV}
 	>=dev-qt/qtdeclarative-${QT_PV}[widgets]
@@ -163,7 +162,7 @@ src_configure() {
 		CONFIG+=qbs_enable_project_file_updates \
 		$(use systemd && echo CONFIG+=journald) \
 		$(use test && echo BUILD_TESTS=1) \
-		USE_SYSTEM_BOTAN=1
+		USE_SYSTEM_BOTAN=0
 }
 
 src_test() {
