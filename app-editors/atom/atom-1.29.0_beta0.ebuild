@@ -43,7 +43,6 @@ pkg_setup() {
 }
 
 src_prepare() {
-	epatch "${FILESDIR}/${PN}-python.patch"
 	sed -e "s/<%= description %>/$pkgdesc/" \
 		-e "s|<%= installDir %>/share/<%= appFileName %>/atom|/usr/bin/atom|"\
 		-e "s|<%= iconPath %>|atom|"\
