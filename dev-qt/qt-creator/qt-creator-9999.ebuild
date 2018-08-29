@@ -56,6 +56,7 @@ CDEPEND="
 	webengine? ( >=dev-qt/qtwebengine-${QT_PV}[widgets] )
 "
 DEPEND="${CDEPEND}
+	dev-libs/discord-rpc
 	>=dev-qt/linguist-tools-${QT_PV}
 	virtual/pkgconfig
 	doc? ( >=dev-qt/qdoc-${QT_PV} )
