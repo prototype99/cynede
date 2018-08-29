@@ -19,7 +19,7 @@ DEPEND=""
 RDEPEND="${DEPEND}"
 
 src_prepare() {
-	sed 's:Werror:Wno-error:g' -i "${S}/src/CMakeLists.txt"
+	sed 's:Werror:fpic:g' -i "${S}/src/CMakeLists.txt"
 	default
 }
 
