@@ -28,7 +28,7 @@ QTC_PLUGINS=('android:android|qmakeandroidsupport' autotools:autotoolsprojectman
 	'clangcodemodel:clangcodemodel|clangrefactoring|clangpchmanager' clangstaticanalyzer clearcase
 	cmake:cmakeprojectmanager cvs designer git glsl:glsleditor ios mercurial modeling:modeleditor
 	nim perforce python:pythoneditor qbs:qbsprojectmanager qnx scxml:scxmleditor subversion valgrind
-	winrt)
+	winrt +drp +minimap)
 IUSE="doc systemd test +webengine ${QTC_PLUGINS[@]%:*}"
 
 # minimum Qt version required
@@ -117,9 +117,10 @@ src_prepare() {
 		fi
 	done
 
-	# avoid building unused support libraries
+	# avoid building unused support libraries and tools
 	if ! use clangcodemodel; then
-		sed -i -e '/clangbackendipc/d' src/libs/libs.pro || die
+		sed -i -e '/clangsupport/d' src/libs/libs.pro || die
+		sed -i -e '/SUBDIRS += clang\(\|refactoring\|pchmanager\)backend/d' src/tools/tools.pro || die
 	fi
 	if ! use glsl; then
 		sed -i -e '/glsl/d' src/libs/libs.pro || die
@@ -156,11 +157,8 @@ src_prepare() {
 
 src_configure() {
 	eqmake5 IDE_LIBRARY_BASENAME="$(get_libdir)" \
-		IDE_PACKAGE_MODE=1 \
 		$(use clangcodemodel && echo LLVM_INSTALL_DIR="$(get_llvm_prefix)") \
 		$(use qbs && echo QBS_INSTALL_DIR="${EPREFIX}/usr") \
-		CONFIG+=qbs_disable_rpath \
-		CONFIG+=qbs_enable_project_file_updates \
 		$(use systemd && echo CONFIG+=journald) \
 		$(use test && echo BUILD_TESTS=1) \
 		USE_SYSTEM_BOTAN=0
