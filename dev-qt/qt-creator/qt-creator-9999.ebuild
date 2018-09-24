@@ -24,7 +24,7 @@ else
 	S=${WORKDIR}/${MY_P}
 fi
 
-QTC_PLUGINS=('android:android|qmakeandroidsupport' autotools:autotoolsprojectmanager baremetal bazaar
+QTC_PLUGINS=('android:android|qmakeandroidsupport' autotools:autotoolsprojectmanager baremetal bazaar clangformat
 	'clangcodemodel:clangcodemodel|clangrefactoring|clangpchmanager' clangstaticanalyzer clearcase
 	cmake:cmakeprojectmanager cvs designer git glsl:glsleditor ios mercurial modeling:modeleditor
 	nim perforce python:pythoneditor qbs:qbsprojectmanager qnx scxml:scxmleditor subversion valgrind
