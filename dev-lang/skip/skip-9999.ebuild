@@ -34,6 +34,8 @@ DEPEND="${CDEPEND}
 RDEPEND="${CDEPEND}
 "
 
+MAKEOPTS="${MAKEOPTS} -j1"
+
 pkg_setup() {
 	llvm_pkg_setup
 }
@@ -42,7 +44,9 @@ src_prepare() {
 	mkdir -p "${BUILD_DIR}" || die
 
 	# MAGIC
-	sed -i -e 's/ -Werror//' "${S}"/third-party/folly/src/CMake/FollyCompilerUnix.cmake || die
+	sed -i -e 's|-Werror||g' "${S}"/CMake/SkipCompiler.cmake || die
+	sed -i -e 's|-Werror||g' "${S}"/third-party/folly/src/CMake/FollyCompilerUnix.cmake || die
+	sed -i -e 's|-Werror=unknown-warning-option||g' "${S}"/third-party/folly/src/folly/configure.ac || die
 
 	cmake-utils_src_prepare
 	default
