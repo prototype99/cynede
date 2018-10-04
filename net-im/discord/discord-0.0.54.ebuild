@@ -1,6 +1,5 @@
 # Copyright 1999-2018 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Id$
 
 EAPI=6
 
@@ -42,17 +41,11 @@ src_install() {
 	insinto $destdir
 	doins -r locales resources
 	doins \
-		blink_image_resources_200_percent.pak \
-		content_resources_200_percent.pak \
-		ui_resources_200_percent.pak \
-		views_resources_200_percent.pak \
-		content_shell.pak \
-		discord.png \
-		icudtl.dat \
-		natives_blob.bin \
-		snapshot_blob.bin \
-		libnode.so \
-		libffmpeg.so
+		*.pak \
+		*.png \
+		*.dat \
+		*.bin \
+		*.so
 
 	exeinto $destdir
 	doexe DiscordCanary
