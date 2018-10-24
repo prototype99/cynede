@@ -1,8 +1,7 @@
-# Copyright 1999-2017 Gentoo Foundation
+# Copyright 1999-2018 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Id$
 
-EAPI=5
+EAPI=6
 
 #EGIT_REPO_URI="git://github.com/BVLC/caffe.git"
 EGIT_REPO_URI="git://github.com/NVIDIA/caffe"
@@ -23,7 +22,7 @@ IUSE="cuda python"
 CDEPEND="
 	dev-libs/boost:=[python?]
 	media-libs/opencv:=
-	dev-libs/protobuf:=[python?]
+	dev-libs/protobuf:=
 	dev-cpp/glog:=
 	dev-cpp/gflags:=
 	sci-libs/hdf5:=
