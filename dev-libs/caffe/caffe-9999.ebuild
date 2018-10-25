@@ -137,6 +137,10 @@ src_install() {
 	dolib.a distribute/lib/libcaffe*.a*
 	dolib.so distribute/lib/libcaffe*.so*
 
+	#install CMake config
+	insinto /usr/$(get_libdir)/cmake
+	doins ${FILESDIR}/CaffeConfig.cmake
+
 	if use python; then
 		rm distribute/python/caffe/_caffe.cpp || die "rm failed"
 		python_domodule distribute/python/caffe
