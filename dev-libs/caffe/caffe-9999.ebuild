@@ -5,7 +5,7 @@ EAPI=6
 
 #EGIT_REPO_URI="git://github.com/BVLC/caffe.git"
 EGIT_REPO_URI="git://github.com/NVIDIA/caffe"
-PYTHON_COMPAT=( python2_7 )
+PYTHON_COMPAT=( python3_6 )
 
 inherit toolchain-funcs multilib git-r3 python-single-r1
 # Can't use cuda.eclass as nvcc does not like --compiler-bindir set there for some reason
@@ -17,10 +17,12 @@ SRC_URI=""
 LICENSE="BSD-2"
 SLOT="0"
 KEYWORDS=""
-IUSE="cuda python"
+IUSE="cuda -python"
+
+MAKEOPTS="-j1"
 
 CDEPEND="
-	dev-libs/boost:=[python?]
+	dev-libs/boost:=[python]
 	media-libs/opencv:=
 	dev-libs/protobuf:=
 	dev-cpp/glog:=
@@ -32,9 +34,7 @@ CDEPEND="
 	cuda? (
 		dev-util/nvidia-cuda-toolkit
 	)
-	python? (
-		${PYTHON_DEPS}
-	)
+	${PYTHON_DEPS}
 "
 DEPEND="
 	${CDEPEND}
@@ -43,14 +43,13 @@ DEPEND="
 RDEPEND="
 	${CDEPEND}
 	python? (
-		dev-python/pandas[${PYTHON_USEDEP}]
-		dev-python/numpy[${PYTHON_USEDEP}]
-		media-gfx/pydot[${PYTHON_USEDEP}]
-		sci-libs/scikits_image[${PYTHON_USEDEP}]
+		dev-python/pandas
+		dev-python/numpy
+		sci-libs/scikits_image
 	)
 "
 
-REQUIRED_USE="python? ( ${PYTHON_REQUIRED_USE} )"
+REQUIRED_USE="${PYTHON_REQUIRED_USE}"
 
 pkg_setup() {
 	python-single-r1_pkg_setup
@@ -74,12 +73,6 @@ EOF
 		cat >> Makefile.config << EOF
 CUDA_DIR := "${EPREFIX}/opt/cuda"
 
-CUDA_ARCH := -gencode arch=compute_20,code=sm_20 \
-			 -gencode arch=compute_20,code=sm_21 \
-			 -gencode arch=compute_30,code=sm_30 \
-			 -gencode arch=compute_35,code=sm_35 \
-			 -gencode arch=compute_50,code=sm_50 \
-			 -gencode arch=compute_50,code=compute_50
 EOF
 
 		# This should be handled by Makefile itself, but somehow is broken
@@ -88,27 +81,32 @@ EOF
 		echo "CPU_ONLY := 1" >> Makefile.config
 	fi
 
-	if use python; then
-		python_export PYTHON_INCLUDEDIR PYTHON_SITEDIR PYTHON_LIBPATH
-		cat >> Makefile.config << EOF
+	python_export PYTHON_INCLUDEDIR PYTHON_SITEDIR PYTHON_LIBPATH
+	cat >> Makefile.config << EOF
 PYTHON_INCLUDE := "${PYTHON_INCLUDEDIR}" "${PYTHON_SITEDIR}/numpy/core/include"
 PYTHON_LIB := "$(dirname ${PYTHON_LIBPATH})"
-WITH_PYTHON_LAYER := 1
 
 INCLUDE_DIRS += \$(PYTHON_INCLUDE)
 LIBRARY_DIRS += \$(PYTHON_LIB)
 EOF
 
-		local py_version=${EPYTHON#python}
-		sed -e "/PYTHON_LIBRARIES/s/python\s/python-${py_version} /g" \
-			-i Makefile || die "sed failed"
+	if use python; then
+		echo "WITH_PYTHON_LAYER := 1" >> Makefile.config
 	fi
+
+	#boost-python-py is wrong, correct is boost-python-3.6
+	local py_version=${EPYTHON#python}
+	sed -e "/PYTHON_LIBRARIES/s/python\s/python-${py_version} /g" \
+		-i Makefile || die "python sed failed"
+
+	sed -e 's/boost_python-py${python_version_major}${python_version_minor}/boost_python-${python_version_major}.${python_version_minor}/' \
+		-i Makefile || die "boost sed failed"
 
 	sed -e '/blas/s/atlas//' \
 		-e '/^LINKFLAGS +=/ a\
 		LINKFLAGS += -L$(LIB_BUILD_DIR)
 		' \
-		-i Makefile || die "sed failed"
+		-i Makefile || die "LINKFLAGS sed failed"
 
 	tc-export CC CXX
 }
