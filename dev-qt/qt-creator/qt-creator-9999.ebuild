@@ -14,7 +14,7 @@ SLOT="0"
 if [[ ${PV} == *9999 ]]; then
 	inherit git-r3
 	EGIT_REPO_URI="https://github.com/cynede/aina.git"
-	EGIT_BRANCH="aina"
+	EGIT_BRANCH="sao"
 else
 	MY_PV=${PV/_/-}
 	MY_P=${PN}-opensource-src-${MY_PV}
