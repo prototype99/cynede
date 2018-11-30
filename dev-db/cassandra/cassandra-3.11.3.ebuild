@@ -61,6 +61,7 @@ src_install() {
 
 	dosym "/usr/bin/cassandra-${SLOT}" "/usr/bin/cassandra"
 	dosym "/usr/bin/cqlsh-${SLOT}" "/usr/bin/cqlsh"
+	dosym "/usr/bin/nodetool-${SLOT}" "/usr/bin/nodetool"
 }
 
 pkg_postinst() {
