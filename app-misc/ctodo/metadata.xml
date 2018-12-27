@@ -2,7 +2,7 @@
 <!DOCTYPE pkgmetadata SYSTEM "http://www.gentoo.org/dtd/metadata.dtd">
 <pkgmetadata>
 	<maintainer>
-		<email>heather@cynede.net</email>
+		<email>cynede@gentoo.org</email>
 	</maintainer>
 	<longdescription>
 		Local todo list in C and SQLite
