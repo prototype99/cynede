@@ -1,4 +1,4 @@
-# Copyright 1999-2018 Gentoo Authors
+# Copyright 1999-2019 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=6
@@ -29,7 +29,7 @@ RDEPEND="
 	>=net-libs/nghttp2-1.32.0
 	sys-libs/zlib
 	icu? ( >=dev-libs/icu-61.1:= )
-	ssl? ( =dev-libs/openssl-1.0.2*:0=[-bindist] )
+	ssl? ( >=dev-libs/openssl-1.0.2[-bindist] )
 "
 DEPEND="
 	${RDEPEND}
