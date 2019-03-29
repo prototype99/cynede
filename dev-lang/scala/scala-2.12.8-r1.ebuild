@@ -16,12 +16,17 @@ SRC_URI="http://downloads.lightbend.com/${MY_PN}/${PV}/${MY_P}.tgz"
 
 LICENSE="BSD"
 SLOT="0"
-KEYWORDS="~amd64 ~x86"
+KEYWORDS="~amd64 ~x86 ~amd64-linux ~x86-linux ~x86-macos"
 IUSE="doc"
 
+COMMON_DEP="dev-java/ant-core:0
+	dev-java/jline:2
+	app-arch/xz-utils:0"
+
 RDEPEND="
-	>=virtual/jre-1.6
-	!dev-lang/scala"
+	${COMMON_DEP}
+	>=virtual/jre-1.8
+	>=virtual/jdk-1.8"
 
 S="${WORKDIR}/${MY_P}"
 
@@ -34,7 +39,7 @@ src_prepare() {
 	ebegin 'Patching SCALA_HOME variable in bin/ directory'
 	local f
 	for f in bin/*; do
-		sed -i -e 's#\(SCALA_HOME\)=.*#\1=/usr/share/scala-bin#' $f || die
+		sed -i -e 's#\(SCALA_HOME\)=.*#\1=/usr/share/scala#' $f || die
 	done
 	eend $?
 }
@@ -44,10 +49,6 @@ src_compile() {
 }
 
 src_install() {
-	ebegin 'Installing bin scripts'
-	dobin bin/*
-	eend $?
-
 	ebegin 'Installing jar files'
 	cd lib/ || die
 
@@ -63,9 +64,19 @@ src_install() {
 	java-pkg_dojar scala-library.jar
 	java-pkg_dojar scala-reflect.jar
 
+	cd ../ || die
+
 	eend $?
 
-	cd ../ || die
+	local SCALADIR="/usr/share/scala"
+	exeinto "${SCALADIR}/bin"
+	doexe $(find bin/ -type f ! -iname '*.bat')
+
+	dodir /usr/bin
+	for b in $(find bin/ -type f ! -iname '*.bat'); do
+		local _name=$(basename "${b}")
+		dosym "${SCALADIR}/bin/${_name}" "/usr/bin/${_name}"
+	done
 
 	ebegin 'Installing man pages'
 	doman man/man1/*.1
