@@ -24,6 +24,8 @@ S="${WORKDIR}/cockroach-${MY_PV}"
 
 QA_EXECSTACK="usr/bin/cockroach"
 
+MAKEOPS="${MAKEOPS} -j1"
+
 pkg_pretend() {
 	check-reqs_pkg_pretend
 	if [[ ${MERGE_TYPE} != binary && $(gcc-major-version) -lt 6 ]]; then
