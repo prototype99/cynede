@@ -1,7 +1,7 @@
-# Copyright 1999-2019 Gentoo Foundation
+# Copyright 1999-2019 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=6
+EAPI=7
 MY_PV=v${PV}
 CHECKREQS_MEMORY="2G"
 
@@ -37,6 +37,13 @@ pkg_setup() {
 	check-reqs_pkg_setup
 	enewgroup cockroach
 	enewuser cockroach -1 /bin/sh /var/lib/cockroach cockroach
+}
+
+src_prepare() {
+	sed -i "s/-Werror;-Wall;//" "${S}"/src/github.com/cockroachdb/cockroach/c-deps/libroach/CMakeLists.txt || die "sed failed"
+	sed -i "s/-Werror //" "${S}"/src/github.com/cockroachdb/cockroach/c-deps/protobuf/third_party/benchmark/CMakeLists.txt || die "sed failed"
+	sed -i "s/ -Werror//" "${S}"/src/github.com/cockroachdb/cockroach/c-deps/rocksdb/CMakeLists.txt || die "sed failed"
+	default
 }
 
 src_compile() {
