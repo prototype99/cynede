@@ -3,10 +3,10 @@
 
 EAPI=6
 
-PYTHON_COMPAT=( python{2_7,3_5,3_6,3_7} )
+PYTHON_COMPAT=( python{3_5,3_6,3_7} )
 
 : ${CMAKE_MAKEFILE_GENERATOR:=ninja}
-inherit python-r1 toolchain-funcs cmake-multilib
+inherit python-r1 toolchain-funcs cmake-utils
 
 DESCRIPTION="A collection of algorithms and sample code for various computer vision problems"
 HOMEPAGE="https://opencv.org"
@@ -23,7 +23,7 @@ SRC_URI="https://github.com/${PN}/${PN}/archive/${PV}.tar.gz -> ${P}.tar.gz
 
 LICENSE="BSD"
 SLOT="0/3.4.1" # subslot = libopencv* soname version
-KEYWORDS="amd64 ~arm arm64 ~ppc ~ppc64 x86 ~amd64-linux"
+KEYWORDS="~amd64 ~arm arm64 ~ppc ~ppc64 ~x86 ~amd64-linux"
 IUSE="contrib contrib_cvv contrib_dnn contrib_hdf contrib_sfm contrib_xfeatures2d cpu_flags_x86_sse cpu_flags_x86_sse2 cpu_flags_x86_sse3 cpu_flags_x86_ssse3 cpu_flags_x86_sse4_1 cpu_flags_x86_sse4_2 cpu_flags_x86_popcnt cpu_flags_x86_avx cpu_flags_x86_avx2 cpu_flags_x86_fma3 cuda debug dnn_samples +eigen examples ffmpeg gdal gflags glog gphoto2 gstreamer gtk ieee1394 jpeg jpeg2k lapack libav opencl openexr opengl openmp pch png +python qt5 tesseract testprograms threads tiff vaapi v4l vtk webp xine"
 # OpenGL needs gtk or Qt installed to activate, otherwise build system
 # will silently disable it Wwithout the user knowing, which defeats the
@@ -48,42 +48,42 @@ REQUIRED_USE="
 #	openmp? ( !threads )
 
 RDEPEND="
-	app-arch/bzip2[${MULTILIB_USEDEP}]
-	dev-libs/protobuf:=[${MULTILIB_USEDEP}]
-	sys-libs/zlib[${MULTILIB_USEDEP}]
+	app-arch/bzip2
+	dev-libs/protobuf:=
+	sys-libs/zlib
 	cuda? ( dev-util/nvidia-cuda-toolkit:0= )
 	contrib_hdf? ( sci-libs/hdf5 )
 	ffmpeg? (
-		libav? ( media-video/libav:0=[${MULTILIB_USEDEP}] )
-		!libav? ( media-video/ffmpeg:0=[${MULTILIB_USEDEP}] )
+		libav? ( media-video/libav:0= )
+		!libav? ( media-video/ffmpeg:0= )
 	)
 	gdal? ( sci-libs/gdal:= )
-	gflags? ( dev-cpp/gflags[${MULTILIB_USEDEP}] )
-	glog? ( dev-cpp/glog[${MULTILIB_USEDEP}] )
-	gphoto2? ( media-libs/libgphoto2[${MULTILIB_USEDEP}] )
+	gflags? ( dev-cpp/gflags )
+	glog? ( dev-cpp/glog )
+	gphoto2? ( media-libs/libgphoto2 )
 	gstreamer? (
-		media-libs/gstreamer:1.0[${MULTILIB_USEDEP}]
-		media-libs/gst-plugins-base:1.0[${MULTILIB_USEDEP}]
+		media-libs/gstreamer:1.0
+		media-libs/gst-plugins-base:1.0
 	)
 	gtk? (
-		dev-libs/glib:2[${MULTILIB_USEDEP}]
-		x11-libs/gtk+:2[${MULTILIB_USEDEP}]
-		opengl? ( x11-libs/gtkglext[${MULTILIB_USEDEP}] )
+		dev-libs/glib:2
+		x11-libs/gtk+:2
+		opengl? ( x11-libs/gtkglext )
 	)
 	ieee1394? (
-		media-libs/libdc1394[${MULTILIB_USEDEP}]
-		sys-libs/libraw1394[${MULTILIB_USEDEP}]
+		media-libs/libdc1394
+		sys-libs/libraw1394
 	)
-	jpeg? ( virtual/jpeg:0[${MULTILIB_USEDEP}] )
-	jpeg2k? ( media-libs/jasper:=[${MULTILIB_USEDEP}] )
+	jpeg? ( virtual/jpeg:0 )
+	jpeg2k? ( media-libs/jasper:= )
 	lapack? ( virtual/lapack )
-	opencl? ( virtual/opencl[${MULTILIB_USEDEP}] )
-	openexr? ( media-libs/openexr[${MULTILIB_USEDEP}] )
+	opencl? ( virtual/opencl )
+	openexr? ( media-libs/openexr )
 	opengl? (
-		virtual/opengl[${MULTILIB_USEDEP}]
-		virtual/glu[${MULTILIB_USEDEP}]
+		virtual/opengl
+		virtual/glu
 	)
-	png? ( media-libs/libpng:0=[${MULTILIB_USEDEP}] )
+	png? ( media-libs/libpng:0= )
 	python? ( ${PYTHON_DEPS} dev-python/numpy[${PYTHON_USEDEP}] )
 	qt5? (
 		dev-qt/qtgui:5
@@ -93,14 +93,14 @@ RDEPEND="
 		opengl? ( dev-qt/qtopengl:5 )
 	)
 	tesseract? ( app-text/tesseract[opencl=] )
-	threads? ( dev-cpp/tbb[${MULTILIB_USEDEP}] )
-	tiff? ( media-libs/tiff:0[${MULTILIB_USEDEP}] )
-	v4l? ( >=media-libs/libv4l-0.8.3[${MULTILIB_USEDEP}] )
+	threads? ( dev-cpp/tbb )
+	tiff? ( media-libs/tiff:0 )
+	v4l? ( >=media-libs/libv4l-0.8.3 )
 	vtk? ( sci-libs/vtk[rendering] )
-	webp? ( media-libs/libwebp[${MULTILIB_USEDEP}] )
+	webp? ( media-libs/libwebp )
 	xine? ( media-libs/xine-lib )"
 DEPEND="${RDEPEND}
-	virtual/pkgconfig[${MULTILIB_USEDEP}]
+	virtual/pkgconfig
 	contrib_dnn? ( dev-libs/cereal )
 	eigen? ( dev-cpp/eigen:3 )
 	vaapi?  ( x11-libs/libva )"
@@ -259,7 +259,7 @@ src_prepare() {
 	fi
 }
 
-multilib_src_configure() {
+src_configure() {
 	# please dont sort here, order is the same as in CMakeLists.txt
 	GLOBALCMAKEARGS=(
 	# Optional 3rd party components
@@ -267,7 +267,7 @@ multilib_src_configure() {
 		-DENABLE_DOWNLOAD=OFF
 		-DWITH_1394=$(usex ieee1394)
 	#	-DWITH_AVFOUNDATION=OFF # IOS
-		-DWITH_VTK=$(multilib_native_usex vtk)
+		-DWITH_VTK=$(usex vtk)
 		-DWITH_EIGEN=$(usex eigen)
 		-DWITH_VFW=OFF # Video windows support
 		-DWITH_FFMPEG=$(usex ffmpeg)
@@ -289,7 +289,7 @@ multilib_src_configure() {
 		-DWITH_PVAPI=OFF
 		-DWITH_GIGEAPI=OFF
 		-DWITH_ARAVIS=OFF
-		-DWITH_QT=$(multilib_native_usex qt5 5 OFF)
+		-DWITH_QT=$(usex qt5 5 OFF)
 		-DWITH_WIN32UI=OFF		# Windows only
 	#	-DWITH_QUICKTIME=OFF
 	#	-DWITH_QTKIT=OFF
@@ -304,7 +304,7 @@ multilib_src_configure() {
 		-DWITH_DSHOW=ON			# direct show supp
 		-DWITH_MSMF=OFF
 		-DWITH_XIMEA=OFF	# Windows only
-		-DWITH_XINE=$(multilib_native_usex xine)
+		-DWITH_XINE=$(usex xine)
 		-DWITH_CLP=OFF
 		-DWITH_OPENCL=$(usex opencl)
 		-DWITH_OPENCL_SVM=OFF
@@ -316,17 +316,17 @@ multilib_src_configure() {
 		-DWITH_MATLAB=OFF
 		-DWITH_VA=$(usex vaapi)
 		-DWITH_VA_INTEL=$(usex vaapi)
-		-DWITH_GDAL=$(multilib_native_usex gdal)
+		-DWITH_GDAL=$(usex gdal)
 		-DWITH_GPHOTO2=$(usex gphoto2)
-		-DWITH_LAPACK=$(multilib_native_usex lapack)
+		-DWITH_LAPACK=$(usex lapack)
 		-DWITH_ITT=OFF # 3dparty libs itt_notify
 		-DWITH_QUIRC=OFF # need quirc library
 	# ===================================================
 	# CUDA build components: nvidia-cuda-toolkit takes care of GCC version
 	# ===================================================
-		-DWITH_CUDA=$(multilib_native_usex cuda)
-		-DWITH_CUBLAS=$(multilib_native_usex cuda)
-		-DWITH_CUFFT=$(multilib_native_usex cuda)
+		-DWITH_CUDA=$(usex cuda)
+		-DWITH_CUBLAS=$(usex cuda)
+		-DWITH_CUFFT=$(usex cuda)
 		-DWITH_NVCUVID=OFF
 #		-DWITH_NVCUVID=$(usex cuda)
 		-DCUDA_NPP_LIBRARY_ROOT_DIR=$(usex cuda "${EPREFIX}/opt/cuda" "")
@@ -338,23 +338,23 @@ multilib_src_configure() {
 		-DBUILD_ANDROID_EXAMPLES=OFF
 		-DBUILD_opencv_apps=
 		-DBUILD_DOCS=OFF # Doesn't install anyways.
-		-DBUILD_EXAMPLES=$(multilib_native_usex examples)
+		-DBUILD_EXAMPLES=$(usex examples)
 		-DBUILD_PERF_TESTS=OFF
-		-DBUILD_TESTS=$(multilib_native_usex testprograms)
+		-DBUILD_TESTS=$(usex testprograms)
 		-DBUILD_WITH_DEBUG_INFO=$(usex debug)
 	#	-DBUILD_WITH_STATIC_CRT=OFF
 		-DBUILD_WITH_DYNAMIC_IPP=OFF
 		-DBUILD_FAT_JAVA_LIB=OFF
 	#	-DBUILD_ANDROID_SERVICE=OFF
-		-DBUILD_CUDA_STUBS=$(multilib_native_usex cuda)
+		-DBUILD_CUDA_STUBS=$(usex cuda)
 		-DOPENCV_EXTRA_MODULES_PATH=$(usex contrib "${WORKDIR}/opencv_contrib-${PV}/modules" "")
 	# ===================================================
 	# OpenCV installation options
 	# ===================================================
 		-DINSTALL_CREATE_DISTRIB=OFF
-		-DINSTALL_C_EXAMPLES=$(multilib_native_usex examples)
-		-DINSTALL_TESTS=$(multilib_native_usex testprograms)
-		-DINSTALL_PYTHON_EXAMPLES=$(multilib_native_usex examples)
+		-DINSTALL_C_EXAMPLES=$(usex examples)
+		-DINSTALL_TESTS=$(usex testprograms)
+		-DINSTALL_PYTHON_EXAMPLES=$(usex examples)
 	#	-DINSTALL_ANDROID_EXAMPLES=OFF
 		-DINSTALL_TO_MANGLED_PATHS=OFF
 		# opencv uses both ${CMAKE_INSTALL_LIBDIR} and ${LIB_SUFFIX}
@@ -417,19 +417,13 @@ multilib_src_configure() {
 			-DBUILD_opencv_dnns_easily_fooled=OFF
 			-DBUILD_opencv_xfeatures2d=$(usex contrib_xfeatures2d ON OFF)
 			-DBUILD_opencv_cvv=$(usex contrib_cvv ON OFF)
-			-DBUILD_opencv_hdf=$(multilib_native_usex contrib_hdf ON OFF)
+			-DBUILD_opencv_hdf=$(usex contrib_hdf ON OFF)
 			-DBUILD_opencv_sfm=$(usex contrib_sfm ON OFF)
 		)
 
-		if multilib_is_native_abi; then
-			GLOBALCMAKEARGS+=(
-				-DCMAKE_DISABLE_FIND_PACKAGE_Tesseract=$(usex !tesseract)
-			)
-		else
-			GLOBALCMAKEARGS+=(
-				-DCMAKE_DISABLE_FIND_PACKAGE_Tesseract=ON
-			)
-		fi
+		GLOBALCMAKEARGS+=(
+			-DCMAKE_DISABLE_FIND_PACKAGE_Tesseract=$(usex !tesseract)
+		)
 	fi
 
 	# workaround for bug 413429
@@ -477,11 +471,11 @@ python_module_compile() {
 	rm -rf modules/python2 || die "rm failed"
 }
 
-multilib_src_install() {
+src_install() {
 	cmake-utils_src_install
 
 	# Build and install the python modules for all targets
-	if multilib_is_native_abi && use python; then
+	if use python; then
 		local orig_BUILD_DIR=${BUILD_DIR}
 		python_foreach_impl python_module_compile
 	fi
