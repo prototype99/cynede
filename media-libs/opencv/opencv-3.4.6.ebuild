@@ -320,6 +320,7 @@ multilib_src_configure() {
 		-DWITH_GPHOTO2=$(usex gphoto2)
 		-DWITH_LAPACK=$(multilib_native_usex lapack)
 		-DWITH_ITT=OFF # 3dparty libs itt_notify
+		-DWITH_QUIRC=OFF # need quirc library
 	# ===================================================
 	# CUDA build components: nvidia-cuda-toolkit takes care of GCC version
 	# ===================================================
