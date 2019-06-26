@@ -36,7 +36,7 @@ DEPEND="${RDEPEND}
 
 S="${WORKDIR}/${MYP}"
 
-DOCS=( CONTRIBUTORS.txt DEPENDS.txt RELEASE.txt TASKS.txt TODO.txt )
+DOCS=( CONTRIBUTORS.txt RELEASE.txt )
 
 python_test() {
 	distutils_install_for_testing
