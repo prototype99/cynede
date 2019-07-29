@@ -6,7 +6,6 @@ EAPI=7
 DISTUTILS_OPTIONAL=1
 PYTHON_COMPAT=( python2_7 python{3_5,3_6,3_7} )
 MY_PV=${PV/_rc/-rc}
-MY_PV=${MY_PV/_beta/-beta}
 MY_P=${PN}-${MY_PV}
 
 inherit bazel check-reqs cuda distutils-r1 flag-o-matic toolchain-funcs
@@ -16,7 +15,7 @@ HOMEPAGE="https://www.tensorflow.org/"
 
 LICENSE="Apache-2.0"
 SLOT="0"
-#KEYWORDS="~amd64"
+KEYWORDS="~amd64"
 IUSE="cuda mpi +python"
 CPU_USE_FLAGS_X86="sse sse2 sse3 sse4_1 sse4_2 avx avx2 fma3 fma4"
 for i in $CPU_USE_FLAGS_X86; do
@@ -244,7 +243,7 @@ src_configure() {
 		# This is not autoconf
 		./configure || die
 
-		echo 'build --config=noaws --config=nohdfs --config=noignite --config=nokafka --config=v2' >> .bazelrc || die
+		echo 'build --config=noaws --config=nohdfs --config=noignite --config=nokafka' >> .bazelrc || die
 		echo 'build --define tensorflow_mkldnn_contraction_kernel=0' >> .bazelrc || die
 		echo 'build --incompatible_no_support_tools_in_action_inputs=false' >> .bazelrc || die
 	}
