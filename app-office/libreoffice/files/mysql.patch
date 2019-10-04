@@ -1,0 +1,30 @@
+Bug: https://bugs.gentoo.org/692422
+Upstream: https://github.com/LibreOffice/core/pull/20
+
+In MySQL Connector/C 8, my_bool is gone and replaced with a bool.  Previously,
+it was a char. This triggers errors when trying to convert a char*
+to a bool*.  If the MySQL Connector/C version is 8.x of later, use a bool.
+Otherwise, default to a char.
+
+--- a/connectivity/source/drivers/mysqlc/mysqlc_preparedstatement.hxx
++++ b/connectivity/source/drivers/mysqlc/mysqlc_preparedstatement.hxx
+@@ -39,11 +39,17 @@
+ using ::com::sun::star::uno::RuntimeException;
+ using ::com::sun::star::uno::Type;
+ 
++#if defined MYSQL_VERSION_ID && (MYSQL_VERSION_ID >= 80000)
++using my_bool = bool;
++#else
++using my_bool = char;
++#endif
++
+ struct BindMetaData
+ {
+-    char is_null = 0;
++    my_bool is_null = 0;
+     unsigned long length = 0;
+-    char error = 0;
++    my_bool error = 0;
+ };
+ 
+ typedef ::cppu::ImplHelper5<css::sdbc::XPreparedStatement, css::sdbc::XParameters,
