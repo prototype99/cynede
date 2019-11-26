@@ -23,6 +23,7 @@ RDEPEND="
 	sci-libs/nolds
 	sci-libs/bioread
 	sci-libs/biosppy
+	dev-python/cvxopt
 "
 
 src_prepare() {
