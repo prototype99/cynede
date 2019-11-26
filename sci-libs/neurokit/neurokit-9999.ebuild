@@ -19,7 +19,10 @@ IUSE=""
 
 RESTRICT="test"
 
-RDEPEND="sci-libs/nolds"
+RDEPEND="
+	sci-libs/nolds
+	sci-libs/bioread
+"
 
 src_prepare() {
 	sed -i -e "s|packages=find_packages(),|packages=find_packages(exclude=('tests',)),|g" "${S}"/setup.py
