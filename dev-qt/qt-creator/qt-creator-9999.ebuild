@@ -14,7 +14,7 @@ SLOT="0"
 if [[ ${PV} == *9999 ]]; then
 	inherit git-r3
 	EGIT_REPO_URI="https://github.com/cynede/near.git"
-	EGIT_BRANCH="near"
+	EGIT_BRANCH="near2"
 else
 	MY_PV=${PV/_/-}
 	MY_P=${PN}-opensource-src-${MY_PV}
