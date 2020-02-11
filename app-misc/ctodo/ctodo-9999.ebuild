@@ -1,9 +1,8 @@
-# Copyright 1999-2016 Gentoo Foundation
+# Copyright 1999-2020 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
-# $Id$
 
-EAPI=5
-inherit git-2
+EAPI=6
+inherit git-r3
 
 DESCRIPTION="TODO list app"
 EGIT_REPO_URI="git://github.com/Heather/ctodo.git"
