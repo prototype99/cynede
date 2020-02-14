@@ -349,6 +349,10 @@ src_install() {
 	einfo "Installing headers"
 	ebazel build //tensorflow:install_headers
 	ebazel shutdown
+	# re2 installed as separated library so clean up it from here
+	rm bazel-genfiles/tensorflow/include/re2/set.h
+	rm bazel-genfiles/tensorflow/include/re2/re2.h
+	rm bazel-genfiles/tensorflow/include/re2/filtered_re2.h
 	insinto /usr/include/
 	doins -r bazel-genfiles/tensorflow/include/*
 
